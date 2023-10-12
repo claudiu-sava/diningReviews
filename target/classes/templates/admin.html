@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href = "css/styles.css" rel = "stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+</head>
+<body>
+<div th:replace="/fragments/navbar :: header"></div>
+
+<h1 class="mb-4">Admin Page:</h1>
+
+<a href="/admin/new" type="button" class="btn btn-primary mb-1 mt-1">New Admin</a>
+
+<table class="table">
+
+    <thead>
+    <tr>
+        <th scope="col">
+            <a href="/admin/?sortBy=name">
+                <button type="button" class="btn btn-outline-dark">Name</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=overallReview">
+                <button type="button" class="btn btn-outline-dark">Overall Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=eggReview">
+                <button type="button" class="btn btn-outline-dark">Egg Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=diaryReview">
+                <button type="button" class="btn btn-outline-dark">Diary Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=peanutReview">
+                <button type="button" class="btn btn-outline-dark">Peanut Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=comment">
+                <button type="button" class="btn btn-outline-dark">Comment</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=reviewedBy">
+                <button type="button" class="btn btn-outline-dark">Reviewed By</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=id">
+                <button type="button" class="btn btn-outline-dark">ID</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/admin/?sortBy=isAccepted">
+                <button type="button" class="btn btn-outline-dark">Accepted</button>
+            </a>
+        </th>
+
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="review:${reviewList}">
+        <td th:text="${review.name}"></td>
+        <td th:text="${review.overallReview}"></td>
+        <td th:text="${review.eggReview}"></td>
+        <td th:text="${review.diaryReview}"></td>
+        <td th:text="${review.peanutReview}"></td>
+        <td th:text="${review.comment}"></td>
+        <td th:text="${review.reviewedBy}"></td>
+        <td th:text="${review.id}"></td>
+        <td th:text="${review.isAccepted}"></td>
+        <td>
+            <form method="get" th:action="@{/admin/accept}">
+                <input hidden="hidden" th:value="${review.id}" type="text" name="id">
+                <button type="submit" class="btn btn-info">Accept</button>
+            </form>
+
+        </td>
+
+    </tr>
+    </tbody>
+
+</table>
+
+</body>
+</html>

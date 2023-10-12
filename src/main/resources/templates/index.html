@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href = "css/styles.css" rel = "stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Dining Reviews</title>
+</head>
+<body>
+<div th:replace="/fragments/navbar :: header"></div>
+
+<h1>Reviews:</h1>
+<p th:text="${loggedInAs}"></p>
+
+<div class="btn-group float-left" role="group" aria-label="Review-Buttons">
+    <a href="/new" type="button" class="btn btn-primary mr-1">Add Review</a>
+</div>
+
+
+<div th:if="${loggedInAs.equals('You are not logged in')}" class="btn-group float-right" role="group" aria-label="Login-Buttons">
+    <a href="/login" type="button" class="btn btn-secondary mr-1">Login</a>
+    <a th:href="@{/users/new}" type="button" class="btn btn-secondary mr-1">Sign-up</a>
+</div>
+
+<div th:unless="${loggedInAs.equals('You are not logged in')}" class="btn-group float-right" role="group" aria-label="Login-Buttons">
+    <form method="post" th:action="@{/logout}">
+        <button type="submit" class="btn btn-secondary">Logout</button>
+    </form>
+</div>
+
+
+<table class="table">
+
+    <thead>
+    <tr>
+        <th scope="col">
+            <a href="/?sortBy=name">
+                <button type="button" class="btn btn-outline-dark">Name</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=overallReview">
+                <button type="button" class="btn btn-outline-dark">Overall Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=eggReview">
+                <button type="button" class="btn btn-outline-dark">Egg Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=diaryReview">
+                <button type="button" class="btn btn-outline-dark">Diary Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=peanutReview">
+                <button type="button" class="btn btn-outline-dark">Peanut Review</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=comment">
+                <button type="button" class="btn btn-outline-dark">Comment</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=reviewedBy">
+                <button type="button" class="btn btn-outline-dark">Reviewed By</button>
+            </a>
+        </th>
+
+        <th scope="col">
+            <a href="/?sortBy=id">
+                <button type="button" class="btn btn-outline-dark">ID</button>
+            </a>
+        </th>
+        
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="review:${reviewList}">
+        <td th:text="${review.name}"></td>
+        <td th:text="${review.overallReview}"></td>
+        <td th:text="${review.eggReview}"></td>
+        <td th:text="${review.diaryReview}"></td>
+        <td th:text="${review.peanutReview}"></td>
+        <td th:text="${review.comment}"></td>
+        <td th:text="${review.reviewedBy}"></td>
+        <td th:text="${review.id}"></td>
+        <td>
+            <div th:if="${isAdmin || username.equals(review.reviewedBy)}">
+                <form method="get" th:action="@{/delete/r}">
+                    <input hidden="hidden" th:value="${review.id}" type="text" name="id">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+
+</body>
+</html>
