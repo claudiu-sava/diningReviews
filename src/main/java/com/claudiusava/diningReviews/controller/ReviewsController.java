@@ -48,15 +48,9 @@ public class ReviewsController {
         }
         model.addAttribute("username", username);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("title", "Dining Reviews");
 
         return "index";
-    }
-
-
-    @GetMapping("/delete")
-    private String showDeleteReviewPage(){
-
-        return "delete";
     }
 
 
