@@ -36,7 +36,8 @@ public class LoginLogoutController {
 
 
     @GetMapping("/login")
-    public static String loginPage(){
+    public String loginPage(Model model){
+        model.addAttribute("title", "Login");
         return "login";
     }
 

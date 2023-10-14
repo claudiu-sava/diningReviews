@@ -81,7 +81,8 @@ public class ReviewsController {
     }
 
     @GetMapping("/new")
-    private String showNewReviewPage(){
+    private String showNewReviewPage(Model model){
+        model.addAttribute("title", "Add Review");
         return "review";
     }
 

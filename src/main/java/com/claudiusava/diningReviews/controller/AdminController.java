@@ -38,7 +38,7 @@ public class AdminController {
                 Iterable<Review> reviewList = reviewRepository.findAll();
                 model.addAttribute("reviewList", reviewList);
             }
-
+            model.addAttribute("title", "Admin Page");
             return "admin";
 
         }
@@ -49,7 +49,8 @@ public class AdminController {
     }
 
     @GetMapping("/new")
-    private String showNewUserPage(){
+    private String showNewUserPage(Model model){
+        model.addAttribute("title", "New Admin");
         return "newAdmin";
     }
 
@@ -64,6 +65,7 @@ public class AdminController {
         if(!Check.usernameExists(user.getUsername(), userRepository) && isAdmin){
             user.setIsAdmin(true);
             userRepository.save(user);
+            model.addAttribute("title", "New Admin");
             return "redirect:/admin/";
         }
         model.addAttribute("error", "Admin creation error.");
@@ -78,6 +80,7 @@ public class AdminController {
         if(Check.isAdmin(isAdminString)){
             Review review = reviewRepository.findById(id).get();
             model.addAttribute("review", review);
+            model.addAttribute("title", "Accept Review");
             return "acceptReview";
         }
         model.addAttribute("error", "You are not an admin. Go away or I will call your mama");

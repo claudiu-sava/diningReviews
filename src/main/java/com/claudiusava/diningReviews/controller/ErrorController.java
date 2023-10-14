@@ -9,7 +9,7 @@ public class ErrorController {
 
     @GetMapping("/error")
     public static String error(Model model){
-
+        model.addAttribute("title", "Error");
         return "error";
     }
 }

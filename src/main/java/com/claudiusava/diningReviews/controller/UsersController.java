@@ -37,11 +37,13 @@ public class UsersController {
         }
 
         model.addAttribute("username", username);
+        model.addAttribute("title", "Users");
         return "users";
     }
 
     @GetMapping("/new")
-    private String showNewUserPage(){
+    private String showNewUserPage(Model model){
+        model.addAttribute("title", "New User");
         return "newUser";
     }
 
@@ -51,7 +53,7 @@ public class UsersController {
 
        if(!Check.usernameExists(user.getUsername(), userRepository)){
            userRepository.save(user);
-           return LoginLogoutController.loginPage();
+           return "redirect:/login";
        }
        model.addAttribute("error", "Error while creating user");
        return ErrorController.error(model);
@@ -77,6 +79,7 @@ public class UsersController {
 
        User user = userOptional.get();
        model.addAttribute("user", user);
+       model.addAttribute("title", user);
        return "showUser";
    }
 
@@ -86,7 +89,7 @@ public class UsersController {
 
         User user = userRepository.findByUsername(username).get();
         model.addAttribute("user", user);
-
+        model.addAttribute("title", "Edit User: " + user.getUsername());
         return "editUser";
    }
 
