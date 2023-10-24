@@ -2,8 +2,8 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <body>
-<div th:replace="/fragments/head :: head"></div>
-<div th:replace="/fragments/navbar :: header"></div>
+<div th:replace="~{/fragments/head :: head}"></div>
+<div th:replace="~{/fragments/navbar :: header}"></div>
 
 <h1>Reviews:</h1>
 <p th:text="${loggedInAs}"></p>
