@@ -6,10 +6,8 @@ import com.claudiusava.diningReviews.model.User;
 import com.claudiusava.diningReviews.repository.ReviewRepository;
 import com.claudiusava.diningReviews.repository.RoleRepository;
 import com.claudiusava.diningReviews.repository.UserRepository;
-import com.claudiusava.diningReviews.services.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +39,7 @@ public class AdminController {
                                  @RequestParam Optional<String> sortBy){
 
 
-        if(Check.isAdmin2()) {
+        if(Check.isAdmin()) {
 
             if(sortBy.isPresent()){
                 List<Review> reviewList = reviewRepository.findAllBy(Sort.by(sortBy.get()));
@@ -71,7 +69,7 @@ public class AdminController {
     private String addNewAdmin(@ModelAttribute User user,
                                Model model){
 
-        if(!Check.usernameExists(user.getUsername(), userRepository) && Check.isAdmin2()){
+        if(!Check.usernameExists(user.getUsername(), userRepository) && Check.isAdmin()){
 
             User userToDb = new User();
             userToDb.setUsername(user.getUsername());
@@ -100,7 +98,7 @@ public class AdminController {
                                   Model model){
 
 
-        if(Check.isAdmin2()){
+        if(Check.isAdmin()){
             Review review = reviewRepository.findById(id).get();
             model.addAttribute("review", review);
             model.addAttribute("title", "Accept Review");
@@ -116,7 +114,7 @@ public class AdminController {
                                  @ModelAttribute("isAccepted") String isAcceptedString,
                                  Model model){
 
-        if(Check.isAdmin2()){
+        if(Check.isAdmin()){
             Review review = reviewRepository.findById(Long.parseLong(id)).get();
 
             Boolean isAccepted = Boolean.parseBoolean(isAcceptedString);
