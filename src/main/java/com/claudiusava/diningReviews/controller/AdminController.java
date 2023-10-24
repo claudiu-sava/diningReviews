@@ -1,15 +1,21 @@
 package com.claudiusava.diningReviews.controller;
 import com.claudiusava.diningReviews.Check;
 import com.claudiusava.diningReviews.model.Review;
+import com.claudiusava.diningReviews.model.Role;
 import com.claudiusava.diningReviews.model.User;
 import com.claudiusava.diningReviews.repository.ReviewRepository;
+import com.claudiusava.diningReviews.repository.RoleRepository;
 import com.claudiusava.diningReviews.repository.UserRepository;
+import com.claudiusava.diningReviews.services.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,13 +29,19 @@ public class AdminController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @GetMapping("/")
     private String showAdminPage(Model model,
-                                 @CookieValue("isAdmin") String isAdminString,
                                  @RequestParam Optional<String> sortBy){
 
-        if(Check.isAdmin(isAdminString)) {
+
+        if(Check.isAdmin2()) {
 
             if(sortBy.isPresent()){
                 List<Review> reviewList = reviewRepository.findAllBy(Sort.by(sortBy.get()));
@@ -57,14 +69,25 @@ public class AdminController {
 
     @PostMapping("/new")
     private String addNewAdmin(@ModelAttribute User user,
-                               @CookieValue(value = "isAdmin", defaultValue = "false") String isAdminString,
                                Model model){
 
-        boolean isAdmin = Boolean.parseBoolean(isAdminString);
+        if(!Check.usernameExists(user.getUsername(), userRepository) && Check.isAdmin2()){
 
-        if(!Check.usernameExists(user.getUsername(), userRepository) && isAdmin){
-            user.setIsAdmin(true);
-            userRepository.save(user);
+            User userToDb = new User();
+            userToDb.setUsername(user.getUsername());
+            userToDb.setPassword(passwordEncoder.encode(user.getPassword()));
+            userToDb.setCity(user.getCity());
+            userToDb.setKanton(user.getKanton());
+            userToDb.setZip(user.getZip());
+            userToDb.setIsPeanutAllergic(user.getIsPeanutAllergic());
+            userToDb.setIsEggAllergic(user.getIsEggAllergic());
+            userToDb.setIsDiaryAllergic(user.getIsDiaryAllergic());
+
+            Role roles = roleRepository.findByRoleName("ROLE_ADMIN").get();
+
+            userToDb.setRoles(Collections.singleton(roles));
+            userRepository.save(userToDb);
+
             model.addAttribute("title", "New Admin");
             return "redirect:/admin/";
         }
@@ -74,10 +97,10 @@ public class AdminController {
 
     @GetMapping("/accept")
     private String showAcceptPage(@RequestParam Long id,
-                                  Model model,
-                                  @CookieValue("isAdmin") String isAdminString){
+                                  Model model){
 
-        if(Check.isAdmin(isAdminString)){
+
+        if(Check.isAdmin2()){
             Review review = reviewRepository.findById(id).get();
             model.addAttribute("review", review);
             model.addAttribute("title", "Accept Review");
@@ -91,10 +114,9 @@ public class AdminController {
     @PostMapping("/accept")
     private String acceptReviews(@ModelAttribute("id") String id,
                                  @ModelAttribute("isAccepted") String isAcceptedString,
-                                 @CookieValue(value = "isAdmin", defaultValue = "false") String isAdminString,
                                  Model model){
 
-        if(Check.isAdmin(isAdminString)){
+        if(Check.isAdmin2()){
             Review review = reviewRepository.findById(Long.parseLong(id)).get();
 
             Boolean isAccepted = Boolean.parseBoolean(isAcceptedString);

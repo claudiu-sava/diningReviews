@@ -30,18 +30,12 @@
             </form>
         </th>
 
-        <th scope="col">
-            <form method="get" th:action="@{/users/}">
-                <input hidden="hidden" type="text" value="isAdmin" name="sortBy">
-                <button type="submit" class="btn btn-outline-dark">Admin</button>
-            </form>
-        </th>
     </thead>
 
     <tbody>
     <tr th:each="user:${users}">
         <td th:text="${user.username}"></td>
-        <td th:text="${user.isAdmin}"></td>
+
     </tr>
     </tbody>
 

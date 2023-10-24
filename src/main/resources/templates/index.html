@@ -92,13 +92,12 @@
         <td th:text="${review.reviewedBy}"></td>
         <td th:text="${review.id}"></td>
         <td>
-            <div th:if="${isAdmin || username.equals(review.reviewedBy)}">
+            <div th:if="${role.equals('[ROLE_ADMIN]') || username.equals(review.reviewedBy)}">
                 <form method="get" th:action="@{/delete/r}">
                     <input hidden="hidden" th:value="${review.id}" type="text" name="id">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
-
         </td>
     </tr>
     </tbody>

@@ -3,6 +3,10 @@ package com.claudiusava.diningReviews.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +19,17 @@ public class User {
     private Long id;
 
     @Setter
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<Role> roles;
+
+    @Setter
     @Column(name = "username")
     private String username;
+
+    @Setter
+    @Column(name = "password")
+    private String password;
 
     @Setter
     @Column(name = "city")
@@ -42,8 +55,5 @@ public class User {
     @Column(name = "isDiaryAllergic")
     private Boolean isDiaryAllergic;
 
-    @Setter
-    @Column(name = "isAdmin")
-    private Boolean isAdmin = false;
-
 }
+

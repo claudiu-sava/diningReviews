@@ -2,10 +2,15 @@ package com.claudiusava.diningReviews.controller;
 import com.claudiusava.diningReviews.Calculate;
 import com.claudiusava.diningReviews.Check;
 import com.claudiusava.diningReviews.model.Review;
+import com.claudiusava.diningReviews.model.Role;
+import com.claudiusava.diningReviews.model.User;
 import com.claudiusava.diningReviews.repository.ReviewRepository;
 import com.claudiusava.diningReviews.repository.UserRepository;
+import com.claudiusava.diningReviews.services.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +32,7 @@ public class ReviewsController {
 
     @GetMapping
     public String showAllAcceptedReviews(Model model,
-                                         @RequestParam Optional<String> sortBy,
-                                         @CookieValue(value = "username", defaultValue = "None") String username,
-                                         @CookieValue(value = "isAdmin", defaultValue = "false") String isAdmin){
+                                         @RequestParam Optional<String> sortBy){
 
         if(sortBy.isPresent()){
             List<Review> reviewList = reviewRepository.findAllByIsAccepted(true, Sort.by(sortBy.get()));
@@ -41,13 +44,14 @@ public class ReviewsController {
         }
 
 
-        if(username.equals("None")){
+        if(UserDetail.getLoggedUserUsername().equals("anonymousUser")){
             model.addAttribute("loggedInAs", "You are not logged in");
         } else {
-            model.addAttribute("loggedInAs", "Logged in as " + username);
+            model.addAttribute("loggedInAs", "Logged in as " + UserDetail.getLoggedUserUsername());
         }
-        model.addAttribute("username", username);
-        model.addAttribute("isAdmin", isAdmin);
+
+        model.addAttribute("username", UserDetail.getLoggedUserUsername());
+        model.addAttribute("role", UserDetail.getLoggedUserRole().toString());
         model.addAttribute("title", "Dining Reviews");
 
         return "index";
@@ -56,17 +60,15 @@ public class ReviewsController {
 
     @GetMapping("/delete/r")
     private String deleteReview(@RequestParam Long id,
-                                @CookieValue(value = "username", defaultValue = "None") String username,
-                                @CookieValue(value = "isAdmin", defaultValue = "false") String isAdminString,
                                 Model model){
 
-        boolean isAdmin = Boolean.parseBoolean(isAdminString);
+        boolean isAdmin = UserDetail.getLoggedUserRole().equals("ROLE_ADMIN");
 
         Review review = getReview(id);
 
         if (Objects.nonNull(review)){
 
-            if (review.getReviewedBy().equals(username) || isAdmin){
+            if (review.getReviewedBy().equals(UserDetail.getLoggedUserUsername()) || isAdmin){
                 reviewRepository.delete(review);
                 return "redirect:/";
             } else {
@@ -88,9 +90,10 @@ public class ReviewsController {
 
 
     @PostMapping
-    private String addReview(@CookieValue(value = "username", defaultValue = "None") String username,
-                             @ModelAttribute Review review,
+    private String addReview(@ModelAttribute Review review,
                              Model model){
+
+        String username = UserDetail.getLoggedUserUsername();
 
         // Security check hehe
         if (Check.userAlreadyReviewedThisRestaurant(review, username, reviewRepository)){
